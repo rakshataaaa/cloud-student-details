@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Student Registration</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="card">
+    <h1>Student Details</h1>
+    <p class="subtitle">Please enter the student's academic information.</p>
+
+    <form id="studentForm">
+      <div class="form-group">
+        <label for="fullName">Full Name</label>
+        <input type="text" id="fullName" name="fullName" placeholder="e.g. Rakshata" required />
+      </div>
+
+      <div class="form-group">
+        <label for="rollNo">Roll Number / Student ID</label>
+        <input type="text" id="rollNo" name="rollNo" placeholder="e.g. CS2026-042" required />
+      </div>
+
+      <div class="form-group">
+        <label for="course">Course / Department</label>
+        <select id="course" name="course" required>
+          <option value="" disabled selected>Select a Department</option>
+          <option value="Computer Science">Computer Science & Engineering</option>
+          <option value="Information Technology">Information Technology</option>
+          <option value="Electronics">Electronics & Communication</option>
+          <option value="Mechanical">Mechanical Engineering</option>
+          <option value="Business Administration">Business Administration</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="email">Student Email</label>
+        <input type="email" id="email" name="email" placeholder="student@university.edu" required />
+      </div>
+
+      <div class="form-group">
+        <label for="semester">Semester / Year</label>
+        <select id="semester" name="semester" required>
+          <option value="" disabled selected>Select Semester</option>
+          <option value="Semester 1">Semester 1</option>
+          <option value="Semester 2">Semester 2</option>
+          <option value="Semester 3">Semester 3</option>
+          <option value="Semester 4">Semester 4</option>
+          <option value="Semester 5">Semester 5</option>
+          <option value="Semester 6">Semester 6</option>
+          <option value="Semester 7">Semester 7</option>
+          <option value="Semester 8">Semester 8</option>
+        </select>
+      </div>
+
+      <button type="submit" id="submitBtn">Register Student</button>
+      <p id="statusMsg" class="status-msg"></p>
+    </form>
+  </div>
+
+  <script>
+    document.getElementById('studentForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = document.getElementById('submitBtn');
+      const status = document.getElementById('statusMsg');
+
+      btn.disabled = true;
+      btn.innerText = 'Registering...';
+
+      const payload = {
+        fullName: document.getElementById('fullName').value,
+        rollNo: document.getElementById('rollNo').value,
+        course: document.getElementById('course').value,
+        email: document.getElementById('email').value,
+        semester: document.getElementById('semester').value,
+      };
+
+      try {
+        const res = await fetch('/api/student', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        const data = await res.json();
+        if (res.ok) {
+          status.style.color = '#10b981';
+          status.innerText = 'Student registered successfully!';
+          document.getElementById('studentForm').reset();
+        } else {
+          status.style.color = '#ef4444';
+          status.innerText = data.error || 'Failed to submit details.';
+        }
+      } catch (err) {
+        status.style.color = '#ef4444';
+        status.innerText = 'Network error. Please try again.';
+      } finally {
+        btn.disabled = false;
+        btn.innerText = 'Register Student';
+      }
+    });
+  </script>
+</body>
+</html>
